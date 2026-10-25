@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace ComicBookStore;
 
 /// <summary>
@@ -52,64 +54,101 @@ public class ComicStore
     /// </summary>
     public void AddOrUpdateComic(ComicBook newComic)
     {
-        // TODO: התלמידים יכתבו את הקוד כאן
+        foreach (ComicBook comic in Inventory)
+        {
+            if (comic.Title == newComic.Title)
+            {
+                comic.StockQuantity += newComic.StockQuantity;
+                return;
+            }
+        }
+
+        Inventory.Add(newComic);
     }
 
-    /// <summary>
-    /// משימה 2: עדכון כמות המלאי של חוברת קומיקס קיימת לפי שמה.
-    /// מחזיר true אם התיקון בוצע, false אם הספר לא נמצא במלאי.
-    /// </summary>
     public bool UpdateStock(string title, int newQuantity)
     {
-        // TODO: התלמידים יכתבו את הקוד כאן
+        foreach (ComicBook comic in Inventory)
+        {
+            if (comic.Title == title)
+            {
+                comic.StockQuantity = newQuantity;
+                return true;
+            }
+        }
+
         return false;
     }
 
-    /// <summary>
-    /// משימה 3: החזרת רשימה של כל החוברות של גיבור מסוים.
-    /// </summary>
     public List<ComicBook> SearchByHero(string heroName)
     {
-        // TODO: התלמידים יכתבו את הקוד כאן
-        return new List<ComicBook>();
+        return Inventory.Where(c => c.Hero == heroName).ToList();
     }
 
-    /// <summary>
-    /// משימה 4: בדיקה האם חוברת קומיקס קיימת ובמלאי (כמות מלאי גדולה מ-0).
-    /// </summary>
     public bool IsInStock(string title)
     {
-        // TODO: התלמידים יכתבו את הקוד כאן
+        foreach (ComicBook comic in Inventory)
+        {
+            if (comic.Title == title && comic.StockQuantity > 0)
+            {
+                return true;
+            }
+        }
+
         return false;
     }
 
-    /// <summary>
-    /// משימה 5: החזרת מילון שבו המפתח הוא שם החוברת (Title) והערך הוא הכמות במלאי (StockQuantity).
-    /// </summary>
     public Dictionary<string, int> GetStockDictionary()
     {
-        // TODO: התלמידים יכתבו את הקוד כאן
-        return new Dictionary<string, int>();
+        Dictionary<string, int> stockDictionary = new Dictionary<string, int>();
+
+        foreach (ComicBook comic in Inventory)
+        {
+            stockDictionary[comic.Title] = comic.StockQuantity;
+        }
+
+        return stockDictionary;
     }
 
-    /// <summary>
-    /// משימה 6: חיפוש כמות במלאי עבור ספר נתון באמצעות המילון.
-    /// **חובה**: להשתמש בתוך הפעולה בזימון של GetStockDictionary() שמימשתם בסעיף 5!
-    /// אם הספר קיים במילון - החזר את הכמות. אם לא - החזר -1.
-    /// </summary>
     public int GetQuantityFromDictionary(string title)
     {
-        // TODO: התלמידים יכתבו את הקוד כאן (חובה לזמן את GetStockDictionary())
+        Dictionary<string, int> stockDictionary = GetStockDictionary();
+
+        if (stockDictionary.ContainsKey(title))
+        {
+            return stockDictionary[title];
+        }
+
         return -1;
     }
 
-    /// <summary>
-    /// משימה 7 (בונוס): החזרת שם הגיבור שיש לו הכי הרבה חוברות קומיקס בחנות (ללא קשר לכמות במלאי).
-    /// רמז: מומלץ להיעזר במילון לספירת חוברות לכל גיבור!
-    /// </summary>
     public string GetHeroWithMostComics()
     {
-        // TODO: התלמידים יכתבו את הקוד כאן
-        return string.Empty;
+        Dictionary<string, int> heroes = new Dictionary<string, int>();
+
+        foreach (ComicBook comic in Inventory)
+        {
+            if (heroes.ContainsKey(comic.Hero))
+            {
+                heroes[comic.Hero]++;
+            }
+            else
+            {
+                heroes[comic.Hero] = 1;
+            }
+        }
+
+        string heroName = "";
+        int max = 0;
+
+        foreach (string hero in heroes.Keys)
+        {
+            if (heroes[hero] > max)
+            {
+                max = heroes[hero];
+                heroName = hero;
+            }
+        }
+
+        return heroName;
     }
-}
